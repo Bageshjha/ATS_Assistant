@@ -6,16 +6,15 @@ import streamlit as st
 import pdf2image
 import google.generativeai as genai
 
-# Load .env locally
+# Load .env for local development
 load_dotenv()
 
-API_KEY = st.secrets.get("Google_API_Key", os.getenv("Google_API_Key"))
+# Try to get API key from Streamlit Secrets first, fallback to .env
+API_KEY = st.secrets["general"]["Google_API_Key"] if "general" in st.secrets else os.getenv("Google_API_Key")
 
-# Ensure API key is found
 if not API_KEY:
-    st.error("Google API Key not found. Please check your .env file or Streamlit Secrets.")
+    st.error("Google API Key not found. Please add it to Streamlit Secrets or .env file.")
     st.stop()
-
 # Configure Google Gemini API
 genai.configure(api_key=API_KEY)
 
