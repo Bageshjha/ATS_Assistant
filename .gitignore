@@ -1,0 +1,21 @@
+# Ignore virtual environments  
+venv/  
+env/  
+.venv/  
+
+# Ignore system & cache files  
+.DS_Store  
+Thumbs.db  
+__pycache__/  
+*.pyc  
+*.pyo  
+.ipynb_checkpoints/  
+.streamlit/  
+
+# Ignore large data files  
+*.log  
+*.sqlite3  
+*.db  
+*.csv  
+*.json  
+*.xlsx  
