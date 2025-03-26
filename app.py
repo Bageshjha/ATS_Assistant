@@ -6,10 +6,12 @@ import streamlit as st
 import pdf2image
 import google.generativeai as genai
 
-# Load environment variables
+# Load .env locally
 load_dotenv()
 
 API_KEY = st.secrets.get("Google_API_Key", os.getenv("Google_API_Key"))
+
+# Ensure API key is found
 if not API_KEY:
     st.error("Google API Key not found. Please check your .env file or Streamlit Secrets.")
     st.stop()
