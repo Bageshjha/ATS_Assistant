@@ -8,7 +8,7 @@ An AI-powered **Applicant Tracking System (ATS) Resume Analyzer** built with **S
 ✅ **Data Extraction** - Reads resume content from PDF files.  
 ✅ **Generative AI Integration** - Uses Google Gemini AI for deep insights.  
 
-## 🛠️ Tech Stack  
+## 🛠️ Tech Stack 
 - **Frontend**: Streamlit  
 - **Backend**: Python (FastAPI/Flask)  
 - **AI Models**: Google Gemini AI (LLM)  
