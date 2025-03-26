@@ -7,16 +7,21 @@ import google.generativeai as genai
 import io
 import base64
 
-# Load environment variables
-load_dotenv()
+#importing api key
+API_KEY = None
+if "general" in st.secrets and "Google_API_Key" in st.secrets["general"]:
+    API_KEY = st.secrets["general"]["Google_API_Key"]  # For Streamlit Cloud
+else:
+    load_dotenv()
+    API_KEY = os.getenv("Google_API_Key")  # For Local Development
 
-API_KEY = os.getenv("Google_API_Key")
 if not API_KEY:
-    st.error("Google API Key not found. Please check your .env file.")
+    st.error("Google API Key not found. Please check your .env file or Streamlit secrets.")
     st.stop()
 
 # Configure Google Gemini API
 genai.configure(api_key=API_KEY)
+
 
 def get_gemini_response(input_text, pdf_content, prompt):
     model = genai.GenerativeModel('gemini-1.5-flash')
@@ -43,7 +48,6 @@ def input_pdf_setup(uploaded_file):
         raise FileNotFoundError("No file uploaded")
 
 # Streamlit UI
-api_key = st.secrets["general"]["Google_API_Key"]
 st.set_page_config(page_title="ATS assistant ")
 st.header("Resume Assistant")
 
