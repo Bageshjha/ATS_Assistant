@@ -20,12 +20,12 @@ An AI-powered **Applicant Tracking System (ATS) Resume Analyzer** built with **S
 pip install -r requirements.txt
 ```
 
-##Set Up Google API Key
+## Set Up Google API Key
 Create a .env file in the root directory and add your Google API Key:
 ```
 Google_API_Key=your_google_api_key_here
 ```
-##Run the Streamlit App
+## Run the Streamlit App
 ```
 streamlit run app.py
 ```
