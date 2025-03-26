@@ -43,6 +43,7 @@ def input_pdf_setup(uploaded_file):
         raise FileNotFoundError("No file uploaded")
 
 # Streamlit UI
+api_key = st.secrets["general"]["Google_API_Key"]
 st.set_page_config(page_title="ATS assistant ")
 st.header("Resume Assistant")
 
