@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Ignore virtual environments  
 venv/  
 env/  
@@ -20,7 +19,6 @@ __pycache__/
 *.csv  
 *.json  
 *.xlsx  
-=======
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -195,4 +193,3 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
->>>>>>> 4e645fcace9b3a2b339681bd35c503f559071d2b
