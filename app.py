@@ -13,7 +13,12 @@ genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
 def generate_gemini_response(prompt, pdf_content, job_description):
     model = genai.GenerativeModel('gemini-2.0-flash-lite')
-    response = model.generate_content([prompt] + pdf_content + [job_description])
+    response = model.generate_content(
+        [prompt] + pdf_content + [job_description],
+        generation_config={
+            "max_output_tokens": 2048
+        }
+    )
     return response.text
 
 def process_uploaded_pdf(uploaded_file):
