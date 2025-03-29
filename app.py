@@ -8,12 +8,20 @@ import pdf2image
 import google.generativeai as genai
 from fpdf import FPDF
 
+# Load environment variables
 load_dotenv()
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
-def generate_gemini_response(prompt, pdf_content, job_description):
-    model = genai.GenerativeModel('gemini-2.0-flash-lite')
-    response = model.generate_content([prompt] + pdf_content + [job_description])
+API_KEY = st.secrets.get("Google_API_Key", os.getenv("Google_API_Key"))
+if not API_KEY:
+    st.error("Google API Key not found. Please check your .env file or Streamlit Secrets.")
+    st.stop()
+
+# Configure Google Gemini API
+genai.configure(api_key=API_KEY)
+
+def get_gemini_response(input_text, pdf_content, prompt):
+    model = genai.GenerativeModel('gemini-1.5-flash')
+    response = model.generate_content([input_text, *pdf_content, prompt])  
     return response.text
 
 def process_uploaded_pdf(uploaded_file):
