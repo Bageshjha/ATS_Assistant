@@ -7,19 +7,26 @@ from PIL import Image
 import pdf2image
 import google.generativeai as genai
 from fpdf import FPDF
+import requests
 
 load_dotenv()
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
 def generate_gemini_response(prompt, pdf_content, job_description):
     model = genai.GenerativeModel('gemini-2.0-flash-lite')
-    response = model.generate_content(
-        [prompt] + pdf_content + [job_description],
-        generation_config={
-            "max_output_tokens": 2048
-        }
-    )
-    return response.text
+    try:
+        response = model.generate_content(
+            [prompt] + pdf_content + [job_description],
+            generation_config={
+                "max_output_tokens": 4096
+            },
+            request_options={"timeout": 30}  # Timeout set to 30 seconds
+        )
+        return response.text
+    except requests.exceptions.Timeout:
+        return "Error: Request timed out. Please try again later."
+    except Exception as e:
+        return f"Error: {e}"
 
 def process_uploaded_pdf(uploaded_file):
     if uploaded_file is not None:
