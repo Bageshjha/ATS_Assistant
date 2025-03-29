@@ -13,7 +13,7 @@ load_dotenv()
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
 def generate_gemini_response(prompt, pdf_content, job_description):
-    model = genai.GenerativeModel('gemini-2.0-flash-lite')
+    model = genai.GenerativeModel('gemini-2.0-flash')
     try:
         response = model.generate_content(
             [prompt] + pdf_content + [job_description],
