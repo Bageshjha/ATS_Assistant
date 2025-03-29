@@ -1,5 +1,6 @@
-streamlit
-google-generativeai
-python-dotenv
 pdf2image
 fpdf
+google-generativeai
+streamlit
+python-dotenv
+Pillow
