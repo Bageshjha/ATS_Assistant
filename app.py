@@ -1,87 +1,116 @@
 from dotenv import load_dotenv
-import os
-import io
 import base64
 import streamlit as st
+import os
+import io
+from PIL import Image
 import pdf2image
 import google.generativeai as genai
+from fpdf import FPDF
 
-# Load environment variables
 load_dotenv()
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
-API_KEY = st.secrets.get("Google_API_Key", os.getenv("Google_API_Key"))
-if not API_KEY:
-    st.error("Google API Key not found. Please check your .env file or Streamlit Secrets.")
-    st.stop()
-
-# Configure Google Gemini API
-genai.configure(api_key=API_KEY)
-
-def get_gemini_response(input_text, pdf_content, prompt):
-    model = genai.GenerativeModel('gemini-1.5-flash')
-    response = model.generate_content([input_text, *pdf_content, prompt])  
+def generate_gemini_response(prompt, pdf_content, job_description):
+    model = genai.GenerativeModel('gemini-2.0-flash-lite')
+    response = model.generate_content([prompt] + pdf_content + [job_description])
     return response.text
 
-def input_pdf_setup(uploaded_file):
+def process_uploaded_pdf(uploaded_file):
     if uploaded_file is not None:
-        # Use Poppler's path in Streamlit Cloud
-        poppler_path = "/usr/bin/poppler"  
-
-        images = pdf2image.convert_from_bytes(
-            uploaded_file.read(), 
-            poppler_path="/usr/bin"
-        )
-
+        images = pdf2image.convert_from_bytes(uploaded_file.read())
+        if not images:
+            raise ValueError("Failed to extract images from PDF.")
+        
         pdf_parts = []
-        for img in images:  
+        for img in images:
             img_byte_arr = io.BytesIO()
             img.save(img_byte_arr, format='JPEG')
             img_byte_arr = img_byte_arr.getvalue()
-
             pdf_parts.append({
                 "mime_type": "image/jpeg",
-                "data": base64.b64encode(img_byte_arr).decode()  
+                "data": base64.b64encode(img_byte_arr).decode()
             })
-
         return pdf_parts
-    else:
-        raise FileNotFoundError("No file uploaded")
+    raise FileNotFoundError("No file uploaded")
 
-# Streamlit UI
-st.set_page_config(page_title="ATS Assistant")
-st.header("Resume Assistant")
+def save_updated_resume(updated_text):
+    pdf = FPDF()
+    pdf.set_auto_page_break(auto=True, margin=15)
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+    pdf.multi_cell(0, 10, updated_text.encode('latin-1', 'replace').decode('latin-1'))
+    pdf_filename = "updated_resume.pdf"
+    pdf.output(pdf_filename)
+    return pdf_filename
 
-input_text = st.text_area("Job Description:", key="input")
+st.set_page_config(page_title="ATS Resume Expert")
+st.header("ATS Tracking System")
+
+job_description = st.text_area("Job Description:", key="input")
 uploaded_file = st.file_uploader("Upload your resume (PDF)...", type=["pdf"])
 
-if uploaded_file:
-    st.success("✅ PDF Uploaded Successfully")
+if uploaded_file is not None:
+    st.write("PDF Uploaded Successfully")
 
-submit1 = st.button("Analyze Resume")
-submit2 = st.button("Check Percentage Match")
+submit_resume_review = st.button("Tell Me About the Resume")
+submit_match_percentage = st.button("Percentage Match")
+submit_update_resume = st.button("Update Resume with Missing Keywords")
 
-input_prompt1 = """
-You are an experienced Technical HR Manager. Review the resume against the job description.
-Provide an evaluation, highlighting strengths and weaknesses.
+resume_review_prompt = """
+You are an experienced Technical Human Resource Manager. Your task is to review the provided resume 
+against the job description. Please share your professional evaluation on whether the candidate's profile 
+aligns with the role. Highlight the strengths and weaknesses of the applicant in relation to the specified job requirements.
+Finally, provide recommendations on skills the candidate should learn to improve their chances. Also, suggest the types of projects they can showcase on their resume with specific examples.
 """
 
-input_prompt2 = """
-You are an ATS scanner with expertise in data science.
-Evaluate the resume against the job description, providing:
-- **Percentage Match**  
-- **Missing Keywords**  
-- **How to get a better percentage match**  
-- **Skills needed and how to improve existing skills**  
-- **Final Thoughts**
+match_percentage_prompt = """
+You are a skilled ATS (Applicant Tracking System) scanner with a deep understanding of data science and ATS functionality. 
+Your task is to evaluate the resume against the provided job description. Provide a percentage match if the resume aligns 
+with the job description. First, display the match percentage, followed by missing keywords, and finally, your final thoughts. 
+Additionally, suggest skills the candidate should acquire and relevant projects they could undertake to strengthen their profile.
 """
 
-if submit1 or submit2:
-    if uploaded_file:
-        pdf_content = input_pdf_setup(uploaded_file) 
-        prompt = input_prompt1 if submit1 else input_prompt2
-        response = get_gemini_response(input_text, pdf_content, prompt)
-        
-        st.subheader("Response:")
-        st.write(response)
+update_resume_prompt = """
+You are an AI-powered resume enhancer. Given the resume and job description, identify missing keywords that would improve 
+the applicant’s chances of passing ATS filters. Rewrite the resume by naturally incorporating these keywords while keeping 
+it professional and readable. Return the complete updated resume text.
+"""
+
+if submit_resume_review:
+    if uploaded_file is not None:
+        try:
+            pdf_content = process_uploaded_pdf(uploaded_file)
+            response = generate_gemini_response(resume_review_prompt, pdf_content, job_description)
+            st.subheader("The Response is:")
+            st.write(response)
+        except Exception as e:
+            st.error(f"Error processing resume: {e}")
     else:
-        st.warning("⚠ Please upload a resume first.")
+        st.write("Please upload the resume.")
+
+elif submit_match_percentage:
+    if uploaded_file is not None:
+        try:
+            pdf_content = process_uploaded_pdf(uploaded_file)
+            response = generate_gemini_response(match_percentage_prompt, pdf_content, job_description)
+            st.subheader("The Response is:")
+            st.write(response)
+        except Exception as e:
+            st.error(f"Error processing resume: {e}")
+    else:
+        st.write("Please upload the resume.")
+
+elif submit_update_resume:
+    if uploaded_file is not None:
+        try:
+            pdf_content = process_uploaded_pdf(uploaded_file)
+            updated_resume_text = generate_gemini_response(update_resume_prompt, pdf_content, job_description)
+            pdf_filename = save_updated_resume(updated_resume_text)
+            st.success(f"Updated resume saved as {pdf_filename}")
+            with open(pdf_filename, "rb") as file:
+                st.download_button("Download Updated Resume", file, file_name=pdf_filename, mime="application/pdf")
+        except Exception as e:
+            st.error(f"Error updating resume: {e}")
+    else:
+        st.write("Please upload the resume.")
