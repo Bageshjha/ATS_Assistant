@@ -1,32 +1,34 @@
-# 📄 ATS Resume Assistant 🚀  
-An AI-powered **Applicant Tracking System (ATS) Resume Analyzer** built with **Streamlit**, **Google Gemini AI**, and **PDF Processing**. This tool helps candidates optimize their resumes by analyzing them against a given job description.
+# ATS Resume Expert
 
-## ✨ Features  
-✅ **Resume Analysis** - Provides a professional evaluation of a resume.  
-✅ **ATS Score Calculation** - Checks how well the resume matches a job description.  
-✅ **Keyword Gap Analysis** - Highlights missing keywords in the resume.  
-✅ **Data Extraction** - Reads resume content from PDF files.  
-✅ **Generative AI Integration** - Uses Google Gemini AI for deep insights.  
+ATS Resume Expert is a Streamlit application designed to enhance resumes by analyzing their alignment with specific job descriptions. It provides insights on strengths, weaknesses, and suggests improvements to increase compatibility with Applicant Tracking Systems (ATS).
 
-## 🛠️ Tech Stack 
-- **Frontend**: Streamlit  
-- **Backend**: Python (FastAPI/Flask)  
-- **AI Models**: Google Gemini AI (LLM)  
-- **Data Processing**: pdf2image, Pandas, NumPy  
-- **Cloud Deployment**: (Optional) Streamlit Sharing / AWS  
+## Features
 
-## Install Dependencies
-```
-pip install -r requirements.txt
-```
+- **Resume Review**: Evaluates the uploaded resume against a provided job description, highlighting strengths and areas for improvement.
+- **Match Percentage**: Calculates and displays the percentage match between the resume and the job description, identifying missing keywords.
+- **Resume Enhancement**: Suggests and incorporates relevant keywords into the resume to improve ATS compatibility.
 
-## Set Up Google API Key
-Create a .env file in the root directory and add your Google API Key:
-```
-Google_API_Key=your_google_api_key_here
-```
-## Run the Streamlit App
-```
-streamlit run app.py
-```
-🚀 Open the local URL displayed in the terminal to access the app.
+## Installation
+
+ **Clone the Repository**:
+   ```
+   git clone https://github.com/yourusername/ATS_Resume_Expert.git
+   
+   ```
+    Use the package manager pip to install the required Python packages:   
+    ```
+    pip install -r requirements.txt
+    ```
+
+## Features
+    1. Upload your resume in PDF format.
+
+    2. Input the job description.
+
+    3. Choose from the available options to review, match, or enhance your resume.   
+
+
+## Run the Application:
+    ```
+    streamlit run app.py
+    ```    
