@@ -15,7 +15,7 @@ ATS Resume Expert is a Streamlit application designed to enhance resumes by anal
    git clone https://github.com/yourusername/ATS_Resume_Expert.git
    
    ```
-    Use the package manager pip to install the required Python packages:   
+   Use the package manager pip to install the required Python packages:   
     ```
     pip install -r requirements.txt
     ```
